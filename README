@@ -1,0 +1,132 @@
+GROUP MEMBERS:
+FORREST GAO (fsg5)
+DYLAN XU (dtx2)
+
+Note: To run our script (which has been modified to be more lightweight and finish a couple minutes), please run "make"
+followed by "./Othello" This will generate all of the data files, which are the main results
+
+For the purposes of the lightweight testing, if you want to also generate a graph, do 
+"mkdir graph_results" followed by "mv scratch* graph_results" followed by "python3 parse_data.py"
+The file will be saved as "lightweight_results.png". Info on how to reproduce full results is below
+
+GAME: 
+OTHELLO
+
+1. Othello is played on an 8x8 board; one player chooses black, one player chooses white
+2. Black moves first; Initial setup is is a checkered white/black 2x2 in the center of the board
+3. Each move must consist of outflanking the opponent. If the current player cannot outflank, 
+turn is forfeited and next player moves
+4. Game ends once neither player can outflank the other
+5. Winner is determined by who has the most of their color on the board
+
+RESEARCH QUESTION:
+
+Under three computational intelligence methods used for games with large state spaces, 
+including 1. MCTS 2. Minimax with Scout 3. Minimax with alpha/beta, which performs best when playing 
+against a greedy agent, and which performs best when pitted against each other?
+
+CODE BASE:
+
+1. OTHELLO GAME CLASS
+
+FILES:
+othello.py
+
+This code implements an Othello game class with functions to simulate the progression of the game state. 
+It initializes an 8x8 game board, handles change of turn, and updates the board according to the Othello "flanking" rules
+
+
+2. GAME PLAYING AGENTS
+
+FILES: 
+mcts.py
+alpha_beta.py
+scout.py
+greedy.py
+
+mcts.py implements the UCT2 algorithm
+alpha_beta.py implements alpha beta Minimax with heuristic + iterative deepening
+scout.py implements scout Minimax with heuristic + iterative deepening
+greedy.py implements a greedy agent that chooses the next move based on a heuristic
+
+
+3. TESTING
+
+FILES:
+makefile
+test_script.py
+compare_agents.py
+parse_data.py
+
+run "make" to create an Othello "executable"
+run "./Othello"
+
+test_script.py is run by ./Othello. For a certain number of game playouts (determined by magic_number and time limit), 
+runs full games for each of the specified a. agent matchups and b. time limits per move. 
+
+For each specified agent matchup and time limit, this script outputs
+a file that displays the NET win rate, the WIN rate, and DIFF, which is the average piece difference (calculated as black - white)
+over all games played within the time limit. Note that this script may output many files into your current working directory. 
+
+The output files will have the following naming convention: 
+'{header}_{magic_number}_{matchup}_{time_limit}.txt'. The indexing convention for
+matchups are specified in compare_agents.py. test_script.py uses Python multiprocessing to run
+each of the time/matchup pairs in parallel. Each parallel process runs a number of playouts in sequence
+as determined by magic_number / time limit.
+
+compare_agents.py is called by test_script.py to run the playouts. Based on the magic_number
+in test_sript.py compare_agents is passed in a number of playouts to perform. The order of the 
+agents is swapped throughout the trials for equality: Player1 goes first, then Player2 goes first.
+Note: we define Player1 as the same agent throughout the playouts and our results show the win
+rate relative to Player1. For example, in a matchup of mcts vs. alpha/beta, mcts is always
+"Player1" but Player1 alternates between going first and going second. And the results are displayed
+with the mcts (Player1) win rate.
+
+Finally, we wrote a script called parse_data to generate the graphs of the final results.
+
+4. RESULTS
+
+a. final_greedy_results.png
+
+This graph displays the results of all 3 agent matchups versus the baseline greedy agent.
+The results are the win rates relative to the comp intelligence agent. These preliminary 
+results simply show that each of the computational intelligence methods requires a
+very short amount of thinking time before it invariable defeats the greedy agent. This
+was in line with what we expected, so below we move onto the next more interesting question
+of pitting the agents against each other.
+
+NOTE: we alternated who played first and who played second in our game testing
+
+b. final_agents_results.png
+
+This graph displays the results of all 3 agent matchups against eachother. The results
+have the win rate relative to the first agent listed in the matchup. As noted above, 
+we alternated who went first in our game testing.
+
+Here are some of the conclusions we drew:
+
+- scout almost always performed worse than alpha-beta. This can be seen both by the increasing
+trend in the green alpha/beta vs. scout line, and by the increasing trend in the orange
+mcts vs. scout line. This could likely be attributed to the fact that we needed to sort 
+the children nodes by according to the heuristic  every time we traversed down another layer,
+and this possibly reduced the speed advantage of the additional pruning by Scout.
+
+- As more computational resources are provided, MCTS rapidly overtook both of the
+pruning agents in performance.
+
+- Although MCTS continues to improve linearly against scout at 50 seconds per move,
+MCTS starts declining in its performance against alpha beta; it is sitll winning,
+but at a different rate. If we extrapolate, we would expect that giving alpha beta
+more and more computational resources would allow it to eventaully take over MCTS,
+although it was infeasible to actually test this.
+
+REPRODUCING RESULTS
+
+Instructions were provided at the beginning fo the README for how to run a lightweight version
+of the results. To reproduce the data for the 3 computational intelligence agents playing against
+each other, one should follow these steps:
+
+1. in parse_data.py uncomment the array of times for versus agents and comment out the 
+one for lightweight testing
+2. In test_script.py, modify the  magic number to 500. This will take around 500 minutes, or 8+hours
+We personally did 500 (8+ hours) across multiple nodes to get all of our results. 
