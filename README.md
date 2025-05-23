@@ -31,61 +31,31 @@ Which AI strategy performs best when pitted against each other?
 - `scout.py`: Scout pruning with heuristic and iterative deepening
 - `greedy.py`: Greedy agent using a simple heuristic
 
-## Testing
-run "make" to create an Othello "executable"
-run "./Othello"
-
-test_script.py is run by ./Othello. For a certain number of game playouts (determined by magic_number and time limit), 
-runs full games for each of the specified a. agent matchups and b. time limits per move. 
-
-For each specified agent matchup and time limit, this script outputs a file that displays the NET win rate, the WIN rate, and DIFF, which is the average piece difference (calculated as black - white) over all games played within the time limit. 
-
-The output files will have the following naming convention: '{header}_{magic_number}_{matchup}_{time_limit}.txt'. The indexing convention for matchups are specified in compare_agents.py. test_script.py uses Python multiprocessing to run each of the time/matchup pairs in parallel. Each parallel process runs a number of playouts in sequence
-as determined by magic_number / time limit.
-
-compare_agents.py is called by test_script.py to run the playouts. Based on the magic_number in test_sript.py, compare_agents is passed in a number of playouts to perform. The order of the agents is swapped throughout the trials for equality: Player1 goes first, then Player2 goes first. Note: we define Player1 as the same agent throughout the playouts and our results show the win rate relative to Player1. For example, in a matchup of mcts vs. alpha/beta, mcts is always "Player1" but Player1 alternates between going first and going second. And the results are displayed with the mcts (Player1) win rate.
-
-To run our program:
-
-1. Open `parse_data.py` and choose time values used for agent-vs-agent comparisons.
-2. Open `test_script.py` and set the variable `magic_number` to desired.
-
-This configuration will run full-length playouts for each agent matchup and time limit. 
-
-After the experiments complete, you can generate the result graphs by running:
-
-```bash
-mkdir graph_results
-mv scratch* graph_results
-python3 parse_data.py
-```
-
 ## Results
-
 ### `final_greedy_results.png`
 
-This graph displays the results of all 3 agent matchups versus the baseline greedy agent. The results are the win rates relative to the AI agent. These preliminary 
-results simply show that each of the AI agents require a very short amount of thinking time before it invariably defeats the greedy agent. This was in line with what we expected, so below we move onto the next more interesting question of pitting the agents against each other.
+This graph shows the performance of all three AI agents against a baseline greedy agent. The win rates are reported relative to the AI agent.
 
-NOTE: we alternated who played first and who played second in our game testing.
+The results indicate that each of the computational intelligence methods quickly outperforms the greedy agent, even with minimal computation time. This aligns with our expectations and serves as a baseline before moving on to more complex agent-vs-agent matchups.
+
+**Note:** In all matchups, we alternated which agent played first to avoid first-move bias.
+
+---
 
 ### `final_agents_results.png`
 
-This graph displays the results of all 3 agent matchups against eachother. The results have the win rate relative to the first agent listed in the matchup. As noted above, 
-we alternated who went first in our game testing.
+This graph compares the performance of the three AI agents against one another. Win rates are shown relative to the first agent listed in each matchup. As before, we alternated the starting player across games.
 
-Conclusions:
-- scout almost always performed worse than alpha-beta. This can be seen both by the increasing
-trend in the green alpha/beta vs. scout line, and by the increasing trend in the orange
-mcts vs. scout line. This could likely be attributed to the fact that we needed to sort 
-the children nodes by according to the heuristic  every time we traversed down another layer,
-and this possibly reduced the speed advantage of the additional pruning by Scout.
+**Key Findings:**
 
-- As more computational resources are provided, MCTS rapidly overtook both of the
-pruning agents in performance.
+- **Scout vs. Alpha-Beta:**  
+  Scout consistently performed worse than Alpha-Beta. This is evident from the upward trend in both the Alpha-Beta vs. Scout and MCTS vs. Scout lines. One likely reason is that Scout required sorting child nodes by heuristic value at every depth, which reduced the speed advantage typically gained from its pruning strategy.
 
-- Although MCTS continues to improve linearly against scout at 50 seconds per move,
-MCTS starts declining in its performance against alpha beta; it is sitll winning,
-but at a different rate. If we extrapolate, we would expect that giving alpha beta
-more and more computational resources would allow it to eventaully take over MCTS,
-although it was infeasible to actually test this.
+- **MCTS vs. Both Pruning Agents:**  
+  MCTS outperformed both Alpha-Beta and Scout as more computational time was allotted. Its performance improved rapidly with increased resources.
+
+- **MCTS vs. Alpha-Beta at High Time Limits:**  
+  While MCTS continued to improve against Scout at 50 seconds per move, its performance against Alpha-Beta began to decline slightly (though MCTS was still winning). This suggests that with enough time, Alpha-Beta could eventually surpass MCTS. However, due to runtime constraints, we were unable to test this hypothesis at longer time intervals.
+
+These results highlight the trade-offs between tree search strategies and how computational resources can shift the performance balance among them.
+
