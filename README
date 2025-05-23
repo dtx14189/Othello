@@ -1,23 +1,51 @@
-GROUP MEMBERS:
-FORREST GAO (fsg5)
-DYLAN XU (dtx2)
+# Othello AI Agent Comparison
 
-Note: To run our script (which has been modified to be more lightweight and finish a couple minutes), please run "make"
-followed by "./Othello" This will generate all of the data files, which are the main results
+This repository explores the performance of three computational intelligence methods for playing Othello:
 
-For the purposes of the lightweight testing, if you want to also generate a graph, do 
-"mkdir graph_results" followed by "mv scratch* graph_results" followed by "python3 parse_data.py"
-The file will be saved as "lightweight_results.png". Info on how to reproduce full results is below
+1. MCTS (Monte Carlo Tree Search)
+2. Minimax with Alpha-Beta Pruning
+3. Minimax with Scout
 
-GAME: 
-OTHELLO
+We test these agents against a baseline Greedy agent and against each other to evaluate performance across time constraints and strategy depth.
 
-1. Othello is played on an 8x8 board; one player chooses black, one player chooses white
-2. Black moves first; Initial setup is is a checkered white/black 2x2 in the center of the board
-3. Each move must consist of outflanking the opponent. If the current player cannot outflank, 
-turn is forfeited and next player moves
-4. Game ends once neither player can outflank the other
-5. Winner is determined by who has the most of their color on the board
+---
+
+## Running the Lightweight Tests
+
+To run the lightweight version of the testing framework:
+
+```bash
+make
+./Othello
+```
+
+This will generate the main results data files.
+
+To also generate a result graph:
+
+```bash
+mkdir graph_results
+mv scratch* graph_results
+python3 parse_data.py
+```
+
+This will save the plot as `lightweight_results.png`.
+
+---
+
+## Othello Game Overview
+
+- Played on an 8x8 board
+- Players choose black or white; black moves first
+- Initial board setup is a central 2x2 checker of black and white
+- Moves must outflank the opponent's pieces
+- If no outflanking move is possible, the turn is skipped
+- Game ends when neither player can move
+- Winner is the player with the most pieces of their color
+
+---
+
+
 
 RESEARCH QUESTION:
 
@@ -26,29 +54,6 @@ including 1. MCTS 2. Minimax with Scout 3. Minimax with alpha/beta, which perfor
 against a greedy agent, and which performs best when pitted against each other?
 
 CODE BASE:
-
-1. OTHELLO GAME CLASS
-
-FILES:
-othello.py
-
-This code implements an Othello game class with functions to simulate the progression of the game state. 
-It initializes an 8x8 game board, handles change of turn, and updates the board according to the Othello "flanking" rules
-
-
-2. GAME PLAYING AGENTS
-
-FILES: 
-mcts.py
-alpha_beta.py
-scout.py
-greedy.py
-
-mcts.py implements the UCT2 algorithm
-alpha_beta.py implements alpha beta Minimax with heuristic + iterative deepening
-scout.py implements scout Minimax with heuristic + iterative deepening
-greedy.py implements a greedy agent that chooses the next move based on a heuristic
-
 
 3. TESTING
 
@@ -130,3 +135,60 @@ each other, one should follow these steps:
 one for lightweight testing
 2. In test_script.py, modify the  magic number to 500. This will take around 500 minutes, or 8+hours
 We personally did 500 (8+ hours) across multiple nodes to get all of our results. 
+
+
+
+
+## Research Question
+
+Which AI strategy performs best:
+- When playing against a greedy baseline agent?
+- When pitted against other AI agents?
+
+---
+
+## Code Structure
+
+### `othello.py`  
+Defines the game logic and board update rules.
+
+### Agents
+- `mcts.py`: UCT2-based Monte Carlo Tree Search
+- `alpha_beta.py`: Alpha-beta pruning with heuristic and iterative deepening
+- `scout.py`: Scout pruning with heuristic and iterative deepening
+- `greedy.py`: Greedy agent using a simple heuristic
+
+### Testing
+- `makefile`: Builds the executable
+- `test_script.py`: Runs parallelized matches for various agent matchups and time constraints
+- `compare_agents.py`: Handles specific agent matchups and win rate calculations
+- `parse_data.py`: Parses data and generates plots
+
+---
+
+## Results
+
+### `final_greedy_results.png`
+
+Displays win rates of each AI agent versus the greedy agent.  
+All AI agents consistently outperform the greedy strategy with minimal compute time.
+
+### `final_agents_results.png`
+
+Compares AI agents head-to-head.  
+Key observations:
+- Scout performs worse than Alpha-Beta, likely due to node sorting overhead.
+- MCTS rapidly improves with more time and eventually outperforms both pruning agents.
+- Alpha-Beta shows signs of catching up to MCTS at higher time limits.
+
+---
+
+## Reproducing Full Results
+
+To replicate the full experimental results:
+
+1. In `parse_data.py`, uncomment the array of times for full testing and comment out the lightweight version.
+2. In `test_script.py`, set `magic_number = 500`.
+
+Note: This process takes 8 or more hours of
+
