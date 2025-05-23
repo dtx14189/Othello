@@ -41,24 +41,15 @@ def compare_policies(p1, p2, games, prob, time_limit_1, time_limit_2):
                     start = time.time()
                     move = p1_policy(position)
                     p1_time = max(p1_time, time.time() - start)
-
-                    #FOR TESTING PURPOSES (F CHANGE)
-                    # print(move)
-                    # print()
                 else:
                     start = time.time()
                     move = p2_policy(position)
                     p2_time = max(p2_time, time.time() - start)
-
-                    #FOR TESTING PURPOSES (F CHANGE)
-                    # print(move)
-                    # print()
             
             flips = position.retrieve_flips(move)
             position.update_state(move, flips)
         
         p1_score += position.payoff() * (1 if i % 2 == 0 else -1)
-        #F CHANGE
         piece_diff += (position.piece_nums[0] - position.piece_nums[1]) * (1 if i % 2 == 0 else -1)
 
         if position.payoff() == 0:
@@ -69,7 +60,7 @@ def compare_policies(p1, p2, games, prob, time_limit_1, time_limit_2):
         else:
             p2_wins += 1
 
-        #PRINT OUT THE BOARD FOR TESTING PURPOSES (F CHANGE)
+        # PRINT OUT THE BOARD  
         # for line in position.board:
         #     for piece in line:
         #         print(piece, end="")
@@ -78,7 +69,6 @@ def compare_policies(p1, p2, games, prob, time_limit_1, time_limit_2):
 
         # print("///////////////////////////////////////////////////////////////////")
 
-    #GIVE A BIT OF LENIENCY ON THE TIME LIMITS (F CHANGE)
     if p1_time > time_limit_1 * 1.1:
         print("WARNING: max time for P1 =", p1_time)
     if p2_time > time_limit_2 * 1.1:
@@ -86,7 +76,6 @@ def compare_policies(p1, p2, games, prob, time_limit_1, time_limit_2):
     
     margin = p1_score / games
     wins = p1_wins / games
-    #F CHANGE
     piece_avg = piece_diff / games
     
     # for row in range(SIZE):
@@ -96,15 +85,10 @@ def compare_policies(p1, p2, games, prob, time_limit_1, time_limit_2):
     #         elif position.board[row][col] == 2:
     #             piece_diff -= 1
     
-    #F CHANGE
     print("NET: ", margin, "; WINS: ", wins, "; DIFF: ", piece_avg, sep="")
 
 if __name__ == '__main__':
-
-    # print(args.count)
-    # print(args.p_random)
-    # print(args.time)
-
+    # Matchup Dictionary
     # 0 = mcts vs greedy
     # 1 = alpha/beta vs greedy
     # 2 = scout vs greedy

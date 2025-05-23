@@ -31,7 +31,7 @@ def mcts_policy(timeLimit):
             for edge in node.edges:
                 if(edge.n == 0):
                     return edge
-                edge_val = edge.child.reward/edge.child.n + UCB(edge.n, node.n - 1) # CHANGED
+                edge_val = edge.child.reward/edge.child.n + UCB(edge.n, node.n - 1) 
                 if(edge_val > max):
                     max = edge_val
                     bestEdge = edge
@@ -42,7 +42,7 @@ def mcts_policy(timeLimit):
             for edge in node.edges:
                 if edge.n == 0:
                     return edge
-                edge_val = edge.child.reward/edge.child.n - UCB(edge.n, node.n - 1) # CHANGED
+                edge_val = edge.child.reward/edge.child.n - UCB(edge.n, node.n - 1) 
                 if(edge_val < min):
                     min = edge_val
                     bestEdge = edge
@@ -59,10 +59,10 @@ def mcts_policy(timeLimit):
    
     def mcts(pos):
         start_time = time.time()
-        state_to_node = {} # Added
+        state_to_node = {} 
         root = Node(pos)
 
-        #Add the root to dictionary storing states and nodes (F CHANGE)
+        # Add the root to dictionary storing states and nodes
         state_to_node[pos] = root
 
         #While there is still time to grow the tree
@@ -73,18 +73,16 @@ def mcts_policy(timeLimit):
             # expand leaf if nonterminal and visited
             if not leaf.state.is_terminal() and leaf.n > 0: 
                 for action in leaf.state.get_actions():
-                    # succ = leaf.state.successor(action)
-                    # leaf.edges.append(Edge(action, Node(succ)))
                     succ = leaf.state.update_state_move(action)
-                    if succ in state_to_node: # Added
-                        leaf.edges.append(Edge(action, state_to_node[succ])) # Added
-                    else: # Added
-                        new_node = Node(succ) # Added
+                    if succ in state_to_node: 
+                        leaf.edges.append(Edge(action, state_to_node[succ])) 
+                    else: 
+                        new_node = Node(succ) 
 
-                        #This is to check if the node already exists in the graph (F CHANGE)
+                        # This is to check if the node already exists in the graph 
                         state_to_node[succ] = new_node
 
-                        leaf.edges.append(Edge(action, new_node)) # Added
+                        leaf.edges.append(Edge(action, new_node)) 
                 random_edge = random.choice(leaf.edges)
                 path.append(random_edge)
                 leaf = random_edge.child
@@ -98,8 +96,6 @@ def mcts_policy(timeLimit):
                 edge.child.reward += payoff
                 edge.child.n += 1
                 
-        #FOR LOGGING PURPOSES (F CHANGE)
-        # print(len(state_to_node))
         if root.state.is_terminal():
             return None
         else:

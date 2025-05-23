@@ -1,36 +1,32 @@
 from concurrent.futures import ProcessPoolExecutor
 import subprocess
 
-#INFORMATION ABOUT THE PROJECT IS WRITTEN IN THE README
+# INFORMATION ABOUT THE PROJECT IS WRITTEN IN THE README
 
-#magic number for determining the number of each time to run
-#CHANGE 1
+# magic number for determining the number of each time to run
 magic_number = 2
 
-#These are the times that we actually tested when collecting our data
-#CHANGE 2
+# These are the times that we actually tested when collecting our data
 # times = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50]
 
-#The script is set to run the times through for a much smaller sample of times
-#This way, it will finish in a couple of minutes at most
+# The script is set to run the times through for a much smaller sample of times
+# This way, it will finish in a couple of minutes at most
 times = [0.1, 0.2, 0.5]
 
-#CHANGE 3
-#6 different possible matchups between agents
+# 6 different possible matchups between agents
 matchups = [_ for _ in range(3, 6)]
 
-#Function to run a single trial, which involves a particular time limit 
-#and a particular agent matchup for a certain number of playouts as 
-#determined by the magic number
+# Function to run a single trial, which involves a particular time limit 
+# and a particular agent matchup for a certain number of playouts as 
+# determined by the magic number
 def run_trial(time_limit, matchup, playouts):
-    #Run one experiment of compare_agents for a single matchup of agents
-
+    # Run one experiment of compare_agents for a single matchup of agents
     cmd = [
         "pypy3",
         "compare_agents.py",
         "--time", str(time_limit),
-        "--count", str(playouts),  #specify the number of games to run per matchup
-        "--random", "0.1",  #specify the randomness
+        "--count", str(playouts),  # specify the number of games to run per matchup
+        "--random", "0.1",  # specify the randomness
         "--matchup", str(matchup)
     ]
 
@@ -44,14 +40,14 @@ def main():
     # Use ProcessPoolExecutor to parallelize all of the trial runs
     with ProcessPoolExecutor() as executor:
 
-        #Create a list of all trials
+        # Create a list of all trials
         trials = []
         for time_limit in times:
             for matchup in matchups:
 
                 trials.append((time_limit, matchup))
 
-        #Submit each trial to the executor
+        # Submit each trial to the executor
         futures_to_trial = {
             executor.submit(run_trial, time_limit, matchup, int(magic_number / time_limit)): (time_limit, matchup)
             for time_limit, matchup in trials
@@ -64,7 +60,6 @@ def main():
 
             try:
                 result = future.result()
-                #CHANGE 4
                 with open(f'scratch_{magic_number}_{matchup}_{time_limit}.txt', 'w') as oo:
                     print(result, file=oo, end="")
             except Exception as e:

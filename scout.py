@@ -13,22 +13,17 @@ def scout_policy(timeLimit):
         depth = 2
         move = None
         while(time.time() - start_time < timeLimit):
-            #If our acout throws a timeout error, terminate the search
+            # If our acout throws a timeout error, terminate the search
             try:
-                #F CHANGE
                 value, move = scout(pos, depth, alpha, beta, start_time, timeLimit)
                 depth = depth + 1
             except TimeoutError:
                 break
             
-        #FOR LOGGING PURPOSES (F CHANGE)
-        # print(depth)
-        # print("scout")
         return move
 
-    #F CHANGE
     def scout(pos, depth, alpha_bound, beta_bound, t_start, t_limit):
-        #Check if the time is out each time alpha beta is called
+        # Check if the time is out each time alpha beta is called
         if time.time() - t_start >= t_limit:
             raise TimeoutError("Time limit exceeded during search.")
         
@@ -63,8 +58,7 @@ def scout_policy(timeLimit):
                     first_child = False
                     score, move = scout(pair[1], depth - 1, alpha, beta, t_start, t_limit)
                 else:
-                    #F CHANGE
-                    #Making the null window with 1 / heuristic_value
+                    # Making the null window with 1 / heuristic_value
                     score, move = scout(pair[1], depth - 1, alpha, alpha + 1 / heuristic_value, t_start, t_limit)
                     if alpha + 1 <= score <= beta:
                         score, move = scout(pair[1], depth - 1, score, beta, t_start, t_limit)
@@ -84,8 +78,7 @@ def scout_policy(timeLimit):
                     first_child = False
                     score, move = scout(pair[1], depth - 1, alpha, beta, t_start, t_limit)
                 else:
-                    #F CHANGE
-                    #making the null window with 1 / heuristic_value
+                    # making the null window with 1 / heuristic_value
                     score, move = scout(pair[1], depth - 1, beta - 1 / heuristic_value, beta, t_start, t_limit)
                     if alpha <= score <= beta - 1:
                         score, move = scout(pair[1], depth - 1, alpha, score, t_start, t_limit)

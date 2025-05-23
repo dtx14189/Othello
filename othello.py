@@ -28,27 +28,27 @@ class Othello:
         if SIZE < 2:
             raise ValueError('Size of the board must be at least 2x2: %d' % SIZE)
 
-        #BOARD INFORMATION:
-        #0 means square is empty
-        #1 means black
-        #2 means white
+        # BOARD INFORMATION:
+        # 0 means square is empty
+        # 1 means black
+        # 2 means white
 
-        #clockwise around the board
+        # clockwise around the board
         self.board = [[0 for _ in range(SIZE)] for _ in range(SIZE)]
-        #Storing which player moves next
+        # Storing which player moves next
         self.turn = 1
-        #Storing the number of active white/black pieces
+        # Storing the number of active white/black pieces
         self.piece_nums = [0 for _ in range(2)]
 
-        #Storing the number of forfeits in a row
+        # Storing the number of forfeits in a row
         self.forfeits = 0
         self.terminal = False
         
-        #Compute the preliminary hash
+        # Compute the preliminary hash
         self._compute_hash()
     
     def board_init(self):
-        #Setting up the initial middle pieces
+        # Setting up the initial middle pieces
         self.board[SIZE // 2 - 1][SIZE // 2 - 1] = 2
         self.board[SIZE // 2][SIZE // 2 - 1] = 1
         self.board[SIZE // 2 - 1][SIZE // 2] = 1
@@ -57,10 +57,10 @@ class Othello:
         self.piece_nums[0] = 2
         self.piece_nums[1] = 2
 
-    #Update the state based on the current move
-    #and the squares to flip
+    # Update the state based on the current move
+    # and the squares to flip
     def update_state(self, move, to_flip):
-        #If the player cannot make a move
+        # If the player cannot make a move
         if to_flip == []:
             self.turn = 3 - self.turn
             self.forfeits += 1
@@ -69,22 +69,20 @@ class Othello:
             self._compute_hash()
             return
 
-        #If the player CAN make a move
-        # print(to_flip)
+        # If the player CAN make a move
         self.board[move[0]][move[1]] = self.turn
         self.piece_nums[self.turn - 1] += len(to_flip) + 1
         self.piece_nums[(3 - self.turn) - 1] -= len(to_flip)
         if sum(self.piece_nums) == SIZE * SIZE:
             self.terminal = True
 
-        # flip = self.is_valid(move[0], move[1])
         for coord in to_flip:
             self.board[coord[0]][coord[1]] = 3 - self.board[coord[0]][coord[1]] 
 
         self.turn = 3 - self.turn
         self.forfeits = 0
 
-        #NOTE: WE ARE RECOMPUTING THE HASH BECAUSE THE STATE CHANGED
+        # RECOMPUTING THE HASH BECAUSE THE STATE CHANGED
         self._compute_hash()
 
     def reverse_state(self, last_move, last_flip):
@@ -106,16 +104,16 @@ class Othello:
         new_state.update_state(move, flips)
         return new_state
 
-    #GET THE CURRENT POSSIBLE ACTIONS
+    # GET THE CURRENT POSSIBLE ACTIONS
     def get_actions(self):
-        #To store the possible actions
+        # To store the possible actions
         actions = []
         
-        #Loop through all squares on the baord
+        # Loop through all squares on the baord
         for i in range(SIZE):
             for j in range(SIZE):
-                #If that square can outflank, then add it
-                #to the actions list
+                # If that square can outflank, then add it
+                # to the actions list
                 if self.is_outflank((i, j)):
                     actions.append((i, j))
         
@@ -125,9 +123,9 @@ class Othello:
         return actions
     
 
-    #Takes in an x and a y position
-    #Returns a list of pieces that are flanked if the move is valid
-    #Otherwise, returns an empty list
+    # Takes in an x and a y position
+    # Returns a list of pieces that are flanked if the move is valid
+    # Otherwise, returns an empty list
     def retrieve_flips(self, move):
         if move is None:
             return []
@@ -137,11 +135,11 @@ class Othello:
         row_y = move[0]
         col_x = move[1]
         
-        #Sanity check on the variables passed in
+        # Sanity check on the variables passed in
         if row_y >= SIZE or col_x >= SIZE or row_y < 0 or col_x < 0:
             raise ValueError('Out of bounds row or column value %d' % SIZE)
 
-        #Check to see if there is already a piece there
+        # Check to see if there is already a piece there
         if self.board[row_y][col_x] != 0:
             return []
 
@@ -157,8 +155,8 @@ class Othello:
 
             # while the piece played is not the same as the neighbor
             
-            #We terminate if we do not run into an empty square, and we 
-            #we do not run into an edge
+            # We terminate if we do not run into an empty square, and we 
+            # we do not run into an edge
             terminates = False
             dir_flip = []
             if sandwich:
@@ -171,7 +169,6 @@ class Othello:
 
                     y += dir[0]
                     x += dir[1]
-                # print(f'DIRFLIP {dir_flip}')
 
                 # if valid, then flip
                 if terminates:
@@ -183,11 +180,11 @@ class Othello:
         row_y = move[0]
         col_x = move[1]
 
-        #Check to see if the square is currently occupied
+        # Check to see if the square is currently occupied
         if self.board[row_y][col_x] != 0:
             return False
 
-        #If the square is empty
+        # If the square is empty
         for dir in DIRECTIONS:
             y = row_y + dir[0]
             x = col_x + dir[1]
@@ -266,20 +263,3 @@ class Othello:
                 return True
         return False
 
-    
-# if __name__ == '__main__':
-#     board = Kalah(6)
-#     pos = board.initial_state(4)
-#     print(pos)
-#     for i in pos.get_actions():
-#         print("move again: ", pos.is_move_again(i))
-#     for i in pos.get_actions():
-#         print("capture: ", pos.is_capture(i))
-#     pos = pos.successor(4)
-#     pos = pos.successor(7)
-#     print(pos)
-#     for i in pos.get_actions():
-#         print("move again: ", pos.is_move_again(i))
-#     for i in pos.get_actions():
-#         print("capture: ", pos.is_capture(i))
-    
