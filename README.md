@@ -36,7 +36,7 @@ Which AI strategy performs best when pitted against each other?
 
 This graph shows the performance of all three AI agents against a baseline greedy agent. The win rates are reported relative to the AI agent.
 
-The results indicate that each of the computational intelligence methods quickly outperforms the greedy agent, even with minimal computation time. This aligns with our expectations and serves as a baseline before moving on to more complex agent-vs-agent matchups.
+The results indicate that each of the AI agents quickly outperforms the greedy agent, even with minimal computation time. This aligns with our expectations and serves as a baseline before moving on to more complex agent-vs-agent matchups.
 
 **Note:** In all matchups, we alternated which agent played first to avoid first-move bias.
 
